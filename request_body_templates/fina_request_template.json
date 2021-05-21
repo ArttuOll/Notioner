@@ -1,0 +1,27 @@
+{
+  "parent": { "database_id": "" },
+  "properties": {
+    "Name": {
+      "type": "title",
+      "title": [{ "text": { "content": "" } }]
+    },
+    "Määrä": {
+      "type": "number",
+      "number": 0
+    },
+    "Kuukausi": {
+      "select": {
+        "name": "",
+        "color": "default"
+      }
+    },
+    "Saldo": {
+      "type": "relation",
+      "relation": [
+        {
+          "id": "d69190a2-c324-4832-abdd-2626d64384b2"
+        }
+      ]
+    }
+  }
+}
