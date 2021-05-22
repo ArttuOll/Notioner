@@ -7,6 +7,11 @@ import requests
 
 ENV_VARIABLES = dotenv_values(".env")
 URL = "https://api.notion.com/v1/pages"
+DATA_TYPE_INDICES_IN_FINA_JSON = {
+                                    "income": 0,
+                                    "expenses": 1,
+                                    "savings": 2
+                                  }
 
 def _read_json_data_from_stdin():
     json_string = stdin.read()
@@ -37,31 +42,26 @@ def _post_data_to_notion(data):
               file=stderr)
 
 
-def _send_income_data_to_notion(template):
+def _send_fina_data_to_notion(template, database_id, index_in_fina_data):
     data = template.copy()
-    for key, value in json_data[0]["data"][0]["data"].items():
+    for key, value in json_data[0]["data"][index_in_fina_data]["data"].items():
         data["properties"]["Name"]["title"][0]["text"]["content"] = key
         data["properties"]["Määrä"]["number"] = value
 
-        data["parent"]["database_id"] = ENV_VARIABLES["INCOME_DB_ID"]
-        data["properties"]["Kuukausi"]["select"]["name"] = json_data[0]["month"]
-        # _post_data_to_notion(body_template_json)
-        print(data)
-
-
-def _send_expense_data_to_notion(template):
-    data = template.copy()
-    for key, value in json_data[0]["data"][1]["data"].items():
-        data["properties"]["Name"]["title"][0]["text"]["content"] = key
-        data["properties"]["Määrä"]["number"] = value
-
-        data["parent"]["database_id"] = ENV_VARIABLES["EXPENSES_DB_ID"]
+        data["parent"]["database_id"] = database_id
         data["properties"]["Kuukausi"]["select"]["name"] = json_data[0]["month"]
         _post_data_to_notion(data)
-        # print(data)
+        print(data)
 
 
 json_data = _read_json_data_from_stdin()
 body_template_json = _read_body_template_json_from_file()
-_send_income_data_to_notion(body_template_json)
-_send_expense_data_to_notion(body_template_json)
+_send_fina_data_to_notion(body_template_json,
+                          ENV_VARIABLES["INCOME_DB_ID"],
+                          DATA_TYPE_INDICES_IN_FINA_JSON["income"])
+_send_fina_data_to_notion(body_template_json,
+                          ENV_VARIABLES["EXPENSES_DB_ID"],
+                          DATA_TYPE_INDICES_IN_FINA_JSON["expenses"])
+_send_fina_data_to_notion(body_template_json,
+                          ENV_VARIABLES["SAVING_DB_ID"],
+                          DATA_TYPE_INDICES_IN_FINA_JSON["savings"])
