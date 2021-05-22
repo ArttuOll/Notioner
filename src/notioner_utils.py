@@ -7,7 +7,7 @@ from sys import stderr, stdin
 from dotenv import dotenv_values
 import requests
 
-ENV_VARIABLES = dotenv_values(".env")
+ENV_VARIABLES = dotenv_values(path.join(path.dirname(__file__), "../.env"))
 URL = "https://api.notion.com/v1/pages"
 
 def read_json_data_from_stdin():
